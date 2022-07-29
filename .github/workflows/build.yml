@@ -29,6 +29,7 @@ jobs:
       run: |
         go build -v -ldflags='-s -w' -o ./rcon ./source/
         strip ./rcon
+        chmod +x rcon
 
     - name: Upload Build
       uses: actions/upload-artifact@v3
