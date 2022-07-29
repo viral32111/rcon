@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - 'go.mod'
+    - 'source/**.go'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Clone Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Build Project
+      run: |
+        go build -v -ldflags='-s -w' -o ./rcon ./source/
+        strip ./rcon
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: rcon
+        path: ./rcon
