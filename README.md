@@ -12,6 +12,8 @@ The program is simple to use, just specify a protocol, server IP address, passwo
 
 These flags can be prefixed with either a single hyphen (`-`) or a double hyphen (`--`), the choice is yours.
 
+Use the `-help` flag to show a list of these flags with descriptions and default values.
+
 #### Required
 
 Exactly one protocol must be used.
