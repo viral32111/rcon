@@ -37,7 +37,7 @@ Exactly one protocol must be used.
 
 All arguments that are not flags will be combined to become the command to execute.
 
-Both the flags and arguments can be provided in any order.
+The flags can be provided in any order, but the arguments (the command to execute) must come last.
 
 ### Examples
 
