@@ -1,8 +1,14 @@
 # RCON
 
-This is a command-line RCON client for [Minecraft](https://wiki.vg/RCON) and the [Source Engine](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol).
+This is a command-line RCON client for Minecraft and the [Source Engine]().
 
-**NOTE: Only the Source Engine protocol is implemented at present.**
+The [Minecraft protocol](https://wiki.vg/RCON) is an implementation of the [Source Engine protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), with a few minor bug fixes.
+
+## Background
+
+Since I run game servers for my community and friends, I require a reliable way to remotely control them via command-line on the host server. There are many tools available to do this already, such as [mcrcon](https://github.com/Tiiffi/mcrcon), which is what I used before making this project, but I wanted to make my own once I started needing one for the Source Engine too, as I did not want to have multiple utilities for each game.
+
+I decided to use Go because it is perfect for these kinds of small single-executable utilities that need to work on multiple platforms, which in my case is Linux (glibc & musl) and Windows. Go also has a huge standard library, which makes development easier as third-party libraries do not have to be imported and managed.
 
 ## Usage
 
@@ -30,6 +36,8 @@ Exactly one protocol must be used.
 ## Arguments
 
 All arguments that are not flags will be combined to become the command to execute.
+
+Both the flags and arguments can be provided in any order.
 
 ### Examples
 
@@ -59,6 +67,24 @@ A Source Engine server at `127.0.0.1` using the default port `27015`:
 $ rcon --password aw3s0meP4ssw0rd --sourceengine addip 60 192.168.0.100
 L 07/29/2022 - 21:00:54: Addip: "<><><>" was banned by IP "for 60.00 minutes" by "Console" (IP "192.168.0.100")
 ```
+
+A Minecraft server at `192.168.0.5` using the default port `25575`:
+
+```
+$ rcon -address 192.168.0.10 -minecraft -password reallyG00dPassword list
+There are 0 of a max of 20 players online:
+```
+
+## To-Do List
+
+* Check if request/response packet identifiers match.
+* Multi-packet/fragmented responses.
+* More error handling.
+* Environment variables as fallback for flags & arguments.
+  * `RCON_ADDRESS=192.168.0.5`
+  * `RCON_PORT=27015`
+  * `RCON_PASSWORD=abcxyz`
+  * `RCON_COMMAND=status`
 
 ## License
 

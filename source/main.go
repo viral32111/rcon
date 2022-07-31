@@ -13,9 +13,6 @@ import (
 	"time"
 )
 
-// RCON_ADDRESS=127.0.0.1, RCON_PORT=27015, RCON_PASSWORD=abcxyz
-//- -m/--minecraft -s/--sourceengine -a/--address 127.0.0.1 -p/--port 27015 -P/--password abcxyz
-
 func main() {
 
 	// Seed the random number generator
@@ -40,19 +37,19 @@ func main() {
 	argCommand := strings.Join( flag.Args(), " " )
 
 	// Require either the Minecraft or the Source Engine flag, but never neither nor both
-	if ( flagMinecraft == true && flagSourceEngine == true ) {
+	if ( flagMinecraft && flagSourceEngine ) {
 		fmt.Fprintln( os.Stderr, "The -minecraft and -sourceengine flags cannot be used together." )
 		os.Exit( 1 )
-	} else if ( flagMinecraft == false && flagSourceEngine == false ) {
+	} else if ( !flagMinecraft && !flagSourceEngine ) {
 		fmt.Fprintln( os.Stderr, "Either the -minecraft or the -sourceengine flag must be specified." )
 		os.Exit( 1 )
 	}
 
 	// Set the port number depending on the protocol, but only if a custom port was not specified
 	if ( flagPort == 0 ) {
-		if ( flagMinecraft == true ) {
+		if ( flagMinecraft ) {
 			flagPort = 25575
-		} else if ( flagSourceEngine == true ) {
+		} else if ( flagSourceEngine ) {
 			flagPort = 27015
 		}
 	}
@@ -78,25 +75,19 @@ func main() {
 
 	// Connect to remote server
 	remoteConnection, dialError := net.Dial( "tcp4", fmt.Sprintf( "%s:%d", ipAddress, flagPort ) )
-	defer remoteConnection.Close() // Disconnect when finished
 	if ( dialError != nil ) {
 		fmt.Fprintln( os.Stderr, "Error dialing remote server:", dialError.Error() )
 		os.Exit( 1 )
 	}
+	defer remoteConnection.Close() // Disconnect when finished
 
-	if ( flagSourceEngine == true ) {
-		authSuccesful := sourceEngineAuthenticate( remoteConnection, flagPassword )
-		if ( authSuccesful == false ) {
-			fmt.Fprintln( os.Stderr, "Failed to authenticate with remote server (wrong password?)." )
-			os.Exit( 1 )
-		}
-
-		commandResponse := sourceEngineExecuteCommand( remoteConnection, argCommand )
-		fmt.Println( commandResponse )
-
-	} else if ( flagMinecraft == true ) {
-		fmt.Fprintln( os.Stderr, "The Minecraft protocol is not implemented yet." )
+	authSuccesful := attemptAuthentication( remoteConnection, flagPassword, flagSourceEngine )
+	if ( !authSuccesful ) {
+		fmt.Fprintln( os.Stderr, "Failed to authenticate with remote server (wrong password?)." )
 		os.Exit( 1 )
 	}
+
+	commandResponse := executeCommand( remoteConnection, argCommand, flagSourceEngine )
+	fmt.Println( commandResponse )
 
 }
