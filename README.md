@@ -85,6 +85,7 @@ There are 0 of a max of 20 players online:
   * `RCON_PORT=27015`
   * `RCON_PASSWORD=abcxyz`
   * `RCON_COMMAND=status`
+* Run multiple commands with a specified delay between each one (mcrcon `-w <seconds> command1 command2...` equivalent)
 
 ## License
 
