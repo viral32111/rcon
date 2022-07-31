@@ -24,15 +24,26 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.18
+      run: mkdir --verbose ./builds/
 
-    - name: Build Project
+    - name: Build Project for Linux (x64)
+      env:
+        GOOS: linux
+        GOARCH: amd64
       run: |
-        go build -v -ldflags='-s -w' -o ./rcon ./source/
-        strip ./rcon
-        chmod +x rcon
+        go build -v -ldflags='-s -w' -o ./builds/rcon-$GOOS-$GOARCH ./source/
+        strip ./builds/rcon-$GOOS-$GOARCH
 
-    - name: Upload Build
+    - name: Build Project for Windows (x64)
+      env:
+        GOOS: windows
+        GOARCH: amd64
+      run: |
+        go build -v -ldflags='-s -w' -o ./builds/rcon-$GOOS-$GOARCH.exe ./source/
+        strip ./builds/rcon-$GOOS-$GOARCH.exe
+
+    - name: Upload Builds
       uses: actions/upload-artifact@v3
       with:
-        name: rcon
-        path: ./rcon
+        name: builds
+        path: ./builds/
