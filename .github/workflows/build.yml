@@ -35,6 +35,8 @@ jobs:
       run: |
         go build -v -ldflags='-s -w' -o ./builds/rcon-$GOOS-$GOARCH ./source/
         strip ./builds/rcon-$GOOS-$GOARCH
+        file ./builds/rcon-$GOOS-$GOARCH
+        sha256sum ./builds/rcon-$GOOS-$GOARCH
 
     - name: Build Project for Windows (x64)
       env:
@@ -43,6 +45,8 @@ jobs:
       run: |
         go build -v -ldflags='-s -w' -o ./builds/rcon-$GOOS-$GOARCH.exe ./source/
         strip ./builds/rcon-$GOOS-$GOARCH.exe
+        file ./builds/rcon-$GOOS-$GOARCH.exe
+        sha256sum ./builds/rcon-$GOOS-$GOARCH.exe
 
     - name: Upload Builds
       uses: actions/upload-artifact@v3
