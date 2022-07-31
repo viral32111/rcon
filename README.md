@@ -1,6 +1,6 @@
 # RCON
 
-This is a command-line RCON client for Minecraft and the [Source Engine]().
+This is a command-line RCON client for [Minecraft](https://minecraft.net) and the [Source Engine](https://wikipedia.org/wiki/Source_(game_engine)).
 
 The [Minecraft protocol](https://wiki.vg/RCON) is an implementation of the [Source Engine protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), with a few minor bug fixes.
 
