@@ -122,16 +122,15 @@ func executeCommand( connection net.Conn, command string, isSourceEngine bool ) 
 
 		finalLineStartPosition := strings.LastIndex( trimmedResponse, "\n" )
 		if ( finalLineStartPosition == -1 ) {
-			fmt.Fprintln( os.Stderr, "Final new-line not found in command response." )
-			os.Exit( 1 )
+			return trimmedResponse
 		}
 
-		commandResponse := trimmedResponse[ 0 : finalLineStartPosition ]
-
-		return commandResponse
+		return trimmedResponse[ 0 : finalLineStartPosition ]
+	
+	// Otherwise, return the response as-is
+	} else {
+		return responseValuePacket.Body
 	}
-
-	return responseValuePacket.Body
 
 }
 

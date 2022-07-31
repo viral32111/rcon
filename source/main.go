@@ -1,6 +1,3 @@
-// go build -o rcon.exe ./source/
-// go run ./source/
-
 package main
 
 import (
