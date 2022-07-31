@@ -68,7 +68,7 @@ $ rcon --password aw3s0meP4ssw0rd --sourceengine addip 60 192.168.0.100
 L 07/29/2022 - 21:00:54: Addip: "<><><>" was banned by IP "for 60.00 minutes" by "Console" (IP "192.168.0.100")
 ```
 
-A Minecraft server at `192.168.0.5` using the default port `25575`:
+A Minecraft server at `192.168.0.10` using the default port `25575`:
 
 ```
 $ rcon -address 192.168.0.10 -minecraft -password reallyG00dPassword list
