@@ -24,6 +24,8 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.18
+
+    - name: Create Build Directory
       run: mkdir --verbose ./builds/
 
     - name: Build Project for Linux (x64)
