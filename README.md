@@ -2,8 +2,6 @@
 
 This is a command-line RCON client for [Minecraft](https://minecraft.net) and the [Source Engine](https://wikipedia.org/wiki/Source_(game_engine)).
 
-The [Minecraft protocol](https://wiki.vg/RCON) is an implementation of the [Source Engine protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), with a few minor bug fixes.
-
 ## Background
 
 Since I run game servers for my community and friends, I require a reliable way to remotely control them via command-line on the host server. There are many tools available to do this already, such as [mcrcon](https://github.com/Tiiffi/mcrcon), which is what I used before making this project, but I wanted to make my own once I started needing one for the Source Engine too, as I did not want to have multiple utilities for each game.
@@ -12,13 +10,15 @@ I decided to use Go because it is perfect for these kinds of small single-execut
 
 ## Usage
 
+Download the [latest release](https://github.com/viral32111/rcon/releases/latest) for your platform, both Linux (glibc & musl) and Windows builds are available.
+
 The program is simple to use, just specify a protocol, server IP address, password and a command then the server response will be displayed.
 
 ### Flags
 
 These flags can be prefixed with either a single hyphen (`-`) or a double hyphen (`--`), the choice is yours.
 
-Use the `-help` flag to show a list of these flags with descriptions and default values.
+Use the `-help` flag to show usage, and a list of these flags with descriptions and default values.
 
 #### Required
 
@@ -32,12 +32,13 @@ Exactly one protocol must be used.
 * `-address <string>` to specify the remote server's IPv4 address (e.g. `-address 192.168.0.5`, defaults to `127.0.0.1`).
 * `-port <number>` to specify the remote server's port number (e.g. `-port 27020`, defaults to the protocol is in use).
 * `-password <string>` to specify the remote console password (e.g. `-password verySecurePassword123`, defaults to an empty string),
+* `-interval <number>` to specify the time to wait in seconds between sending commands, only useful when multiple commands are specified (defaults to 1 second).
 
 ## Arguments
 
-All arguments that are not flags will be combined to become the command to execute.
+Each argument will be treated as a separate command, so if your command contains spaces then wrap it in quotation marks (i.e. `"sv_cheats 1" will be ran as a single command but `sv_cheats 1` will be considered two commands).
 
-The flags can be provided in any order, but the arguments (the command to execute) must come last.
+The flags can be provided in any order, but the arguments (the commands to execute) must come last.
 
 ### Examples
 
@@ -85,7 +86,6 @@ There are 0 of a max of 20 players online:
   * `RCON_PORT=27015`
   * `RCON_PASSWORD=abcxyz`
   * `RCON_COMMAND=status`
-* Run multiple commands with a specified delay between each one (mcrcon `-w <seconds> command1 command2...` equivalent)
 
 ## License
 
