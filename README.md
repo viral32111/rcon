@@ -36,7 +36,7 @@ Exactly one protocol must be used.
 
 ## Arguments
 
-Each argument will be treated as a separate command, so if your command contains spaces then wrap it in quotation marks (i.e. `"sv_cheats 1" will be ran as a single command but `sv_cheats 1` will be considered two commands).
+Each argument will be treated as a separate command, so if your command contains spaces then wrap it in quotation marks (i.e. `"sv_cheats 1"` will be considered a single command but `sv_cheats 1` will be considered two commands).
 
 The flags can be provided in any order, but the arguments (the commands to execute) must come last.
 
