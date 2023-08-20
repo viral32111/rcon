@@ -18,25 +18,19 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        name: [ 'Windows', 'Linux - glibc', 'Linux - musl' ]
-        include:
-          - name: Windows
-            runner: windows-2022
-            os: windows
-            arch: amd64
-          - name: Linux - glibc
-            runner: ubuntu-22.04
-            os: linux
-            arch: amd64
+        operatingSystem: [ 'linux', 'windows' ]
+        architecture: [ 'amd64', '386', 'arm64', 'arm' ]
+        library: [ '', 'glibc', 'musl' ]
+        exclude:
+          - operatingSystem: windows
             library: glibc
-          - name: Linux - musl
-            runner: ubuntu-22.04
-            os: linux
-            arch: amd64
+          - operatingSystem: windows
             library: musl
+          - operatingSystem: linux
+            library: ''
     permissions:
       contents: read
     steps:
@@ -46,55 +40,77 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.19
+          go-version: '1.20'
 
       - name: Install build tools
         if: ${{ matrix.library == 'musl' }}
         run: sudo apt-get install --no-install-recommends --yes musl-tools
 
-      - name: Construct executable name
-        id: executable
+      - name: Create artifact & executable name
+        id: names
         env:
-          BASE_NAME: ${{ env.PROJECT_NAME }}
-          OPERATING_SYSTEM: ${{ matrix.os }}
-          ARCHITECTURE: ${{ matrix.arch }}
+          PROJECT_NAME: ${{ env.PROJECT_NAME }}
+          OPERATING_SYSTEM: ${{ matrix.operatingSystem }}
+          ARCHITECTURE: ${{ matrix.architecture }}
           LIBRARY: ${{ matrix.library }}
         uses: actions/github-script@v6
         with:
-          result-encoding: string
           script: |
-            const { BASE_NAME, OPERATING_SYSTEM, ARCHITECTURE, LIBRARY } = process.env;
-            return `${ BASE_NAME }-${ OPERATING_SYSTEM }-${ ARCHITECTURE }${ LIBRARY != "" ? "-" + LIBRARY : "" }${ OPERATING_SYSTEM == "windows" ? ".exe" : "" }`
+            const { PROJECT_NAME, OPERATING_SYSTEM, ARCHITECTURE, LIBRARY } = process.env;
 
-      - name: Construct artifact name
-        id: artifact
-        env:
-          BASE_NAME: ${{ env.PROJECT_NAME }}
-          OPERATING_SYSTEM: ${{ matrix.os }}
-          ARCHITECTURE: ${{ matrix.arch }}
-          LIBRARY: ${{ matrix.library }}
-        uses: actions/github-script@v6
-        with:
-          result-encoding: string
-          script: |
-            const { BASE_NAME, OPERATING_SYSTEM, ARCHITECTURE, LIBRARY } = process.env;
-            return `${ BASE_NAME }-${ OPERATING_SYSTEM }-${ ARCHITECTURE }${ LIBRARY != "" ? "-" + LIBRARY : "" }`
+            const artifactName = [ PROJECT_NAME, OPERATING_SYSTEM, ARCHITECTURE, LIBRARY ]
+              .filter( value => value != '' )
+              .join( '-' );
 
-      - name: Build project
+            const executableName = artifactName + ( OPERATING_SYSTEM == 'windows' ? '.exe' : '' );
+
+            core.setOutput( 'artifact', artifactName );
+            core.setOutput( 'executable', executableName );
+
+      - name: Build executable
         env:
-          GOOS: ${{ matrix.os }}
-          GOARCH: ${{ matrix.arch }}
+          GOOS: ${{ matrix.operatingSystem }}
+          GOARCH: ${{ matrix.architecture }}
           CC: ${{ matrix.library == 'musl' && '/usr/bin/musl-gcc' || '' }}
-        run: go build -v -ldflags='-s -w' -o ${{ steps.executable.outputs.result }} ./source/
-
-      - name: Strip debug symbols from executable
-        run: strip ${{ steps.executable.outputs.result }}
-
-      - name: Print executable information
-        run: file ${{ steps.executable.outputs.result }} && sha256sum ${{ steps.executable.outputs.result }}
+        run: go build -v -ldflags='-s -w' -o ${{ steps.names.outputs.executable }} ./source/
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.artifact.outputs.result }}
-          path: ${{ steps.executable.outputs.result }}
+          name: ${{ steps.names.outputs.artifact }}
+          path: ${{ steps.names.outputs.executable }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-22.04
+    needs: build
+    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: Move executables
+        run: |
+          mv -v artifacts/${{ env.PROJECT_NAME }}-*/${{ env.PROJECT_NAME }}-* ./
+          rm -v -r artifacts
+
+      - name: Calculate checksums
+        run: |
+          md5sum ${{ env.PROJECT_NAME }}-* > MD5SUMS.txt
+          sha1sum ${{ env.PROJECT_NAME }}-* > SHA1SUMS.txt
+          sha256sum ${{ env.PROJECT_NAME }}-* > SHA256SUMS.txt
+          sha512sum ${{ env.PROJECT_NAME }}-* > SHA512SUMS.txt
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          tag_name: ${{ github.ref_name }}
+          files: |
+            ${{ env.PROJECT_NAME }}-*
+            *SUMS.txt
+          token: ${{ secrets.GITHUB_TOKEN }}
