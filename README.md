@@ -79,17 +79,6 @@ $ rcon -address 192.168.0.10 -minecraft -password reallyG00dPassword list
 There are 0 of a max of 20 players online:
 ```
 
-## To-Do List
-
-* Check if request/response packet identifiers match.
-* Multi-packet/fragmented responses.
-* More error handling.
-* Environment variables as fallback for flags & arguments.
-  * `RCON_ADDRESS=192.168.0.5`
-  * `RCON_PORT=27015`
-  * `RCON_PASSWORD=abcxyz`
-  * `RCON_COMMAND=status`
-
 ## ⚖️ License
 
 Copyright (C) 2022-2023 [viral32111](https://viral32111.com).
