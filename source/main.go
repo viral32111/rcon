@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math/rand"
 	"net"
 	"os"
 	"time"
@@ -11,16 +10,13 @@ import (
 
 const (
 	PROJECT_NAME = "RCON"
-	PROJECT_VERSION = "1.1.0"
+	PROJECT_VERSION = "1.1.1"
 
 	AUTHOR_NAME = "viral32111"
 	AUTHOR_WEBSITE = "https://viral32111.com"
 )
 
 func main() {
-
-	// Seed the random number generator
-	rand.Seed( time.Now().UnixNano() )
 
 	// Variables for the command-line flags with their default values
 	flagMinecraft := false
