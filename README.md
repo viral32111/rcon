@@ -17,7 +17,7 @@ I decided to create this project in Go as it is perfect for small single-executa
 
 ## 📥 Usage
 
-Download the [latest release](https://github.com/viral32111/rcon/releases/latest) for your platform. There are builds available for Linux and Windows, on 32-bit and 64-bit architectures of x86 and ARM. There are extra Linux builds to accommodate glibc and musl libraries. This should cover the majority of Docker images.
+Download the [latest release](https://github.com/viral32111/rcon/releases/latest) for your platform. There are builds available for Linux and Windows, on 32-bit and 64-bit architectures of x86 and ARM. There are extra Linux builds to accommodate glibc and musl libraries. This should cover the majority of use cases.
 
 The utility expects, at minimum, a protocol and command to be provided. The server's IP address, password, and more, can be specified using optional flags. The server response is displayed as the output, so long as the connection and authentication was successful.
 
@@ -28,14 +28,14 @@ Each argument will be treated as a separate command, so wrap commands in quotati
 There are different protocols implemented. Exactly one must be chosen via a flag:
 
 * `--minecraft` to use the [Minecraft protocol](https://wiki.vg/RCON) and set the default port to `25575`.
-* `--sourceengine` to use the [Source Engine protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol), and set the default port to `27015`.
+* `--sourceengine` to use the [Source Engine protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol) and set the default port to `27015`.
 
 There are additional optional flags for fine-tuning functionality:
 
 * `--address <string>`: The remote server's IPv4 address. Defaults to `127.0.0.1`.
-* `--port <number>`: The remote server's port number (e.g. `-port 27020`, defaults to the protocol is in use).
-* `--password <string>`: The remote console password (e.g. `-password verySecurePassword123`, defaults to an empty string),
-* `--interval <number>`: The time to wait in seconds between sending commands, only useful when multiple commands are specified (defaults to 1 second).
+* `--port <number>`: The remote server's port number. Defaults to the selected protocol's default.
+* `--password <string>`: The remote console password. Defaults to nothing.
+* `--interval <number>`: The time to wait in seconds between sending commands, only useful when multiple commands are specified. Defaults to `1`.
 
 These flags can be prefixed with either a single (`-`) or double (`--`) hyphen.
 
