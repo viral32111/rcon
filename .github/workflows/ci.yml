@@ -5,7 +5,7 @@ on:
     paths:
       - 'source/**.go'
       - 'go.mod'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/*.yml'
     branches:
       - '**'
     tags:
